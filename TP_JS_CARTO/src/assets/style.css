@@ -1,3 +1,4 @@
+/*? ************ RESET CSS ************* */
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +18,23 @@ li {
   padding: 0;
 }
 
-button{
+button {
   text-decoration: none;
   border: none;
+}
+
+/*? ***********  MAP **********/
+#map {
+  background-color: #141313;
+  height: 100vh;
+}
+
+.formMap{
+  position: absolute;
+  top: 150px;
+  left: 0px;
+  z-index: 1;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
 }
