@@ -30,6 +30,8 @@ class App{
   marker = null;  //marqueur
   arrMarkers = [];  //tableau de marqueurs
   Marker;  //instance de la classe Marker
+  currentMarker;  //marqueur actuel
+
 
   start(){
     console.log("Hey, ton appli est démarré");  //log pour confirmer que l'appli est démarré
@@ -40,6 +42,7 @@ class App{
     this.formService = new FormService();  //on instancie la classe FormService
     this.Marker = new Marker();  //on instancie la classe Marker
     this.handleMarkers();  //on appelle la méthode handleMarkers
+
   }
 
   //? Chargment du dom
@@ -94,16 +97,33 @@ class App{
     this.map.on('click', this.handleClickMap.bind(this));
 
 
-
- 
   }
 
   //? méthode qui capte le click sur la map
   handleClickMap(event){
-    
+
     //on ajoute les coordonnées du marqueur dans le formulaire
-     document.getElementById('latitude').value = event.lngLat.lat;
-     document.getElementById('longitude').value = event.lngLat.lng;
+
+    if(this.currentMarker==null){
+      
+      
+       this.marker= new mapboxgl.Marker()
+        .setLngLat(event.lngLat)
+        .addTo(this.map);
+        this.currentMarker = true;
+        document.getElementById('latitude').value = event.lngLat.lat;
+      document.getElementById('longitude').value = event.lngLat.lng;
+
+    }else if(this.currentMarker==true){
+      this.marker.remove();
+      this.marker= new mapboxgl.Marker()
+        .setLngLat(event.lngLat)
+        .addTo(this.map);
+      this.currentMarker = true;
+         document.getElementById('latitude').value = event.lngLat.lat;
+      document.getElementById('longitude').value = event.lngLat.lng;
+
+    }
   }
 
   //? méthode qui va afficher le formulaire à droite de la map
@@ -119,13 +139,10 @@ class App{
     elDivForm.style.display = 'none';
 
     elDivForm.innerHTML = `
-    <h3 class="text-center">Ajouter un point d'intérêt</h3>
         <div class="mb-2">
-          <label for="title" class="form-label">Titre</label>
           <input type="text" class="form-control" id="title" placeholder="Titre">
         </div>
         <div class="mb-2">
-          <label for="description" class="form-label">Description</label>
           <textarea class="form-control" id="description" placeholder="Description"></textarea>
         </div> 
         <div class="mb-2">
@@ -209,25 +226,29 @@ class App{
       new mapboxgl.Marker(el)
         .setLngLat([Number(marker.Longitude),Number(marker.Latitude)])
         .setPopup(new mapboxgl.Popup().setHTML(`
-          <div class="card">
-            <h4>Nom de l'évènement :${marker.Titre}</h4>
-            <p>Description : ${marker.Description}</p>
+          <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title ">${marker.Titre}</h4>
+          </div>
+          <div class="modal-body mt-2">
+            <p>Description : ${marker.Description} </p>
             <p>Date de début: ${marker.DateStart}</p>
             <p>Date de fin: ${marker.DateEnd}</p>
+          </div>
           </div>`))
         .addTo(this.map);
 
       
       //si la date de fin est dépassée, le marker devient rouge
       if(Date.now() > Date.parse(marker.DateEnd)){
-        el.style.color = 'red';
+        el.style.color = '#FF0000';
       //si l'évènement se tient dans moins de 3 jours   
       }else if(Date.now() > Date.parse(marker.DateStart) - 259200000){
-        el.style.color = 'orange';
+        el.style.color = '#FFA000';
       }
       //si l'évènement se tient dans plus de 3 jours
       else {
-        el.style.color = 'green';
+        el.style.color = '#00FF00';
       }
     };
   }
