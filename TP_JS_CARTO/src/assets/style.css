@@ -117,6 +117,6 @@ font-size: 3rem;
 }
 
 .mapboxgl-popup-content{
-  background-color: red;
+  background-color: rgb(143, 102, 102);
   width: 500px;
 }
