@@ -213,12 +213,19 @@ class App{
     el.className = 'custom-marker text-center';
     el.innerHTML= '<i class="bi bi-pin-fill"></i>';
 
-    const title = document.createElement('h4');
+    const title = document.createElement('div');
     title.className = 'marker-title';
-    title.textContent = marker.Titre;
     title.style.color = 'black';
+    title.innerHTML = `
+    <h5>${marker.Titre}</h5>
+    <p> Début : ${formatDate(marker.DateStart)}</p>
+    <p>Fin : ${formatDate(marker.DateEnd)}</p>
+    `
 
-    el.appendChild(title);
+   
+
+
+    el.append(title);
     //parcours du tableau de markers
     
    
@@ -232,11 +239,34 @@ class App{
           </div>
           <div class="modal-body mt-2">
             <p>Description : ${marker.Description} </p>
-            <p>Date de début: ${marker.DateStart}</p>
-            <p>Date de fin: ${marker.DateEnd}</p>
+            <p>Date de début: ${formatDate(marker.DateStart)}</p>
+            <p>Date de fin: ${formatDate(marker.DateEnd)}</p>
+            <p>${getEventMessage(marker.DateStart)}</p>
           </div>
           </div>`))
         .addTo(this.map);
+
+        //fonction pour formater la date
+        function formatDate(dateString) {
+          const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+          return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+
+        function getEventMessage(dateStart) {
+          const now = new Date();
+          const eventDate = new Date(dateStart);
+          const diffTime = eventDate - now;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        
+          if (diffTime < 0) {
+            return "Quel dommage ! Vous avez raté cet événement !";
+          } else if (diffDays <= 3) {
+            return `Attention, commence dans ${diffDays} jours et ${diffHours} heures`;
+          } else {
+            return "Aucune";
+          }
+        }
 
       
       //si la date de fin est dépassée, le marker devient rouge
